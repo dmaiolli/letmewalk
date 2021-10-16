@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { insertObject, readAll, readByKey, clearDatabase } from '../database/DbUtils';
+import { insertObject, readAll, readByKey, clearDatabase } from '../../database/DbUtils';
 
 const Home = (props) => {
   const { user } = props.route.params || '';
-
-  const [isUserFiap, setUserFiap] = useState(false);
-
-  useEffect(() => {
-    if (user.user === 'fiap') setUserFiap(true);
-  })
 
   return (
     <View style={styles.container}>

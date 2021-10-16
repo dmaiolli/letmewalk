@@ -1,7 +1,7 @@
 import React from 'react';
 import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useEffect } from 'react/cjs/react.development';
-import { insertObject } from '../database/DbUtils';
+import { insertObject } from '../../database/DbUtils';
 import axios from 'axios';
 
 const Login = (props) => {

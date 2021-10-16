@@ -2,9 +2,11 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Login from './src/components/Login';
-import Home from './src/components/Home';
-import Register from './src/components/Register';
+import Contato from './src/components/views/Contato';
+import Login from './src/components/views/Login';
+import Register from './src/components/views/Register';
+import Home from './src/components/views/Home';
+import AddContato from './src/components/views/AddContato';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +17,27 @@ const App = () => {
         screenOptions={{
           headerTintColor: '#321D5F'
         }}>
+
+        <Stack.Screen
+          name="contato"
+          component={Contato}
+          options={{
+            title: 'Lista contatos',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} />
+        <Stack.Screen
+          name="addContato"
+          component={AddContato}
+          options={{
+            title: 'Adicione contatos',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} />
 
         <Stack.Screen
           name="login"

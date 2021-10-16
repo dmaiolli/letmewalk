@@ -1,6 +1,6 @@
 import React from 'react';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
-import { readByKey } from '../database/DbUtils';
+import { readByKey } from '../../database/DbUtils';
 
 const Login = (props) => {
   let [user, onChangeUser] = React.useState("");
@@ -14,7 +14,7 @@ const Login = (props) => {
       <ScrollView>
         <View style={styles.container}>
 
-          <Image style={{ alignSelf: "center" }} source={require('../assets/Component.png')} />
+          <Image style={{ alignSelf: "center" }} source={require('../../assets/Component.png')} />
 
           <Text style={styles.text}>Usuário</Text>
           <TextInput style={styles.input} value={user} onChangeText={onChangeUser} />
