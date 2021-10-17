@@ -7,6 +7,7 @@ import Login from './src/components/views/Login';
 import Register from './src/components/views/Register';
 import Home from './src/components/views/Home';
 import AddContato from './src/components/views/AddContato';
+import Maps from './src/components/views/Maps';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,16 @@ const App = () => {
           headerTintColor: '#321D5F'
         }}>
 
+        <Stack.Screen
+          name="maps"
+          component={Maps}
+          options={{
+            title: 'Lista contatos',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} />
         <Stack.Screen
           name="contato"
           component={Contato}
