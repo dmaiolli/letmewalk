@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.github.reactnativecommunity.location.RNLocationPackage;
+import com.github.reactnativecommunity.location.RNLocationPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.facebook.react.ReactInstanceManager;
