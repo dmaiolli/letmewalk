@@ -1,17 +1,55 @@
 import React from 'react';
 import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useEffect } from 'react/cjs/react.development';
-import { insertObject } from '../../database/DbUtils';
+import { insertObject, readByKey } from '../../database/DbUtils';
+import auth from '@react-native-firebase/auth';
 import axios from 'axios';
+import { create } from 'react-test-renderer';
 
 const Login = (props) => {
 	const [user, setUser] = React.useState("");
+	const [initializing, setInitializing] = React.useState(true)
+	const [username, setUsername] = React.useState("")
 	const [password, setPassword] = React.useState("");
 	const [confirmPassword, setConfirmPassword] = React.useState("");
 	const [email, setEmail] = React.useState("");
 	const [cep, setCep] = React.useState("");
 	const [endereco, setEndereco] = React.useState({})
-	var emailRegex = /^([\w]\.?)+@([\w]+\.)+([a-zA-Z]{​​​2,4}​​​)+$/;
+	const [contatos, setContatos] = React.useState([])
+
+	const validateEmail = (email) => {
+		const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		return emailRegex.test(String(email));
+	}
+
+	const createUser = (email, password) => {
+		auth()
+			.createUserWithEmailAndPassword(email, password)
+			.catch(error => {
+				if (error.code === 'auth/email-already-in-use') {
+					alert('That email address is already in use!');
+				}
+
+				if (error.code === 'auth/invalid-email') {
+					alert('That email address is invalid!');
+				}
+
+				if (error.code === 'auth/weak-password') {
+					alert('A senha não é forte o suficiente')
+				}
+
+			})
+	}
+
+	const onAuthStateChanged = (user) => {
+		setUser(user);
+		if (initializing) setInitializing(false)
+	}
+
+	useEffect(() => {
+		const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+		return subscriber;
+	}, [])
 
 	useEffect(() => {
 		axios.get(`https://api.pagar.me/1/zipcodes/${cep}`)
@@ -29,7 +67,7 @@ const Login = (props) => {
 					<Text style={styles.title}>Cadastre-se</Text>
 
 					<Text style={styles.text}>Usuário</Text>
-					<TextInput style={styles.input} value={user} onChangeText={setUser} />
+					<TextInput style={styles.input} value={username} onChangeText={setUsername} />
 
 					<Text style={styles.text}>Email</Text>
 					<TextInput style={styles.input} value={email} onChangeText={setEmail} />
@@ -45,13 +83,19 @@ const Login = (props) => {
 
 					<TouchableOpacity style={[styles.button, styles.buttonPrimary]} onPress={() => {
 						const userData = {
-							user,
+							username,
 							endereco,
 							password,
-							email
+							email,
+							contatos
 						}
 
-						if (!user.trim() || !email.trim() || !password || !confirmPassword) {
+						if (!validateEmail(email)) {
+							alert('Este não é um email válido')
+							return
+						}
+
+						if (!username.trim() || !email.trim() || !password || !confirmPassword) {
 							alert('Cadastre todos campos corretamente')
 							return
 						}
@@ -61,12 +105,15 @@ const Login = (props) => {
 							return
 						}
 
-						insertObject(user, userData, (error) => {
+						createUser(email, password);
+
+						insertObject(email, userData, (error) => {
 							if (error) {
 								alert('Tenha certeza que todas informações estão corretas')
 								return
 							}
 						});
+
 
 						props.navigation.navigate('login')
 

@@ -48,5 +48,5 @@ export {
     insertString,
     readByKey,
     readAll,
-    clearDatabase
+    clearDatabase,
 };

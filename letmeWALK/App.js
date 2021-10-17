@@ -8,6 +8,7 @@ import Register from './src/components/views/Register';
 import Home from './src/components/views/Home';
 import AddContato from './src/components/views/AddContato';
 import Maps from './src/components/views/Maps';
+import Teste from './src/components/views/Testes';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,31 +20,22 @@ const App = () => {
           headerTintColor: '#321D5F'
         }}>
 
+        {/* <Stack.Screen
+          name="teste"
+          component={Teste}
+          options={{
+            title: 'Lista contatos',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} /> */}
+
         <Stack.Screen
           name="maps"
           component={Maps}
           options={{
-            title: 'Lista contatos',
-            headerStyle: {
-              backgroundColor: '#321D5F'
-            },
-            headerTintColor: '#FFF'
-          }} />
-        <Stack.Screen
-          name="contato"
-          component={Contato}
-          options={{
-            title: 'Lista contatos',
-            headerStyle: {
-              backgroundColor: '#321D5F'
-            },
-            headerTintColor: '#FFF'
-          }} />
-        <Stack.Screen
-          name="addContato"
-          component={AddContato}
-          options={{
-            title: 'Adicione contatos',
+            title: 'Mapa',
             headerStyle: {
               backgroundColor: '#321D5F'
             },
@@ -60,6 +52,34 @@ const App = () => {
             },
             headerTintColor: '#FFF'
           }} />
+        <Stack.Screen
+          name="contato"
+          component={Contato}
+          options={{
+            title: 'Lista contatos',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} />
+
+        <Stack.Screen
+          name="addContato"
+          component={AddContato}
+          options={{
+            title: 'Adicione contatos',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} />
+
+
+
+
+
+
+
 
 
         <Stack.Screen

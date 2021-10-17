@@ -1,14 +1,24 @@
 import React, { useState } from "react";
 import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { insertObject } from "../../database/DbUtils";
+import { useEffect } from "react/cjs/react.development";
+import { insertObject, readByKey } from "../../database/DbUtils";
 
 const AddContato = (props) => {
+    const { user } = props.route.params || '';
     const [name, setName] = useState('');
     const [celNumber, setCelNumber] = useState('');
-    const id = 0;
+    let id = Date.now()
 
-    const generateId = () => {
-        return id++;
+    const saveContact = (data) => {
+        const userLogged = JSON.parse(user)
+        userLogged.contatos.push(data)
+
+        insertObject(userLogged.email, userLogged, (error) => {
+            if (error) {
+                alert('Tenha certeza que todas informações estão corretas')
+                return
+            }
+        });
     }
 
     return (
@@ -28,20 +38,16 @@ const AddContato = (props) => {
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {
-                        props.navigation.navigate("contato")
-
+                        props.navigation.navigate("contato", {
+                            user
+                        })
                         contactData = {
-                            generateId,
+                            id,
                             name,
                             celNumber
                         }
 
-                        insertObject(name, contactData, (error) => {
-                            if (error) {
-                                alert('Tenha certeza que todas informações estão corretas')
-                                return
-                            }
-                        });
+                        saveContact(contactData);
                     }}>
                     <Text style={styles.buttonText}>Salvar contato</Text>
                 </TouchableOpacity>
