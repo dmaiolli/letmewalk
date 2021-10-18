@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
-import RNLocation from 'react-native-location';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useState } from "react/cjs/react.development";
+import React, { useEffect, useRef } from "react"
+import { Button, StyleSheet, Text, View } from "react-native"
+import MapView, { MarkerAnimated, PROVIDER_GOOGLE } from 'react-native-maps'
+import RNLocation from 'react-native-location'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import MapViewDirections from 'react-native-maps-directions'
+import { useState } from "react/cjs/react.development"
 import config from '../../../config'
 
 RNLocation.configure({
@@ -12,20 +13,23 @@ RNLocation.configure({
 
 const Maps = () => {
 
+    const mapEl = useRef(null)
     const [viewLocation, setViewLocation] = useState([])
     const [origin, setOrigin] = useState(null)
     const [destination, setDestination] = useState(null)
+    const [distance, setDistance] = useState(null)
+
 
     useEffect(async () => {
-        const status = permissionHandle();
+        const status = permissionHandle()
 
         if (status) {
             let location = await RNLocation.getLatestLocation({ timeout: 100, })
             setOrigin({
                 latitude: location.latitude,
                 longitude: location.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421
+                latitudeDelta: 0.00922,
+                longitudeDelta: 0.00421
             })
         } else {
             throw new Error('Location permission not granted')
@@ -38,7 +42,7 @@ const Maps = () => {
             android: {
                 detail: 'coarse' // or 'fine'
             }
-        });
+        })
 
         if (!permission) {
             permission = await RNLocation.requestPermission({
@@ -54,7 +58,7 @@ const Maps = () => {
                 }
             })
 
-            return permission;
+            return permission
         }
     }
 
@@ -72,14 +76,50 @@ const Maps = () => {
                 initialRegion={origin}
                 showsUserLocation={true}
                 loadingEnabled={true}
-            />
+                ref={mapEl}
+                onUserLocationChange={(coordinate) => {
+                    setOrigin({
+                        latitude: coordinate.nativeEvent.coordinate.latitude,
+                        longitude: coordinate.nativeEvent.coordinate.longitude,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421
+                    })
+                }}
+            >
+                {destination && (
+
+                    <MapViewDirections
+                        origin={origin}
+                        destination={destination}
+                        apikey={config.googleDirectionsApi}
+                        strokeWidth={3}
+                        onReady={result => {
+                            setDistance(result.distance)
+                            mapEl.current.fitToCoordinates(
+                                result.coordinates, {
+                                edgePadding: {
+                                    top: 50,
+                                    bottom: 50,
+                                    left: 50,
+                                    right: 50
+                                }
+                            }
+                            )
+                        }}
+                    />
+                )}
+            </MapView>
+
+            <View>
+                <Text>Distancia: {distance} km</Text>
+            </View>
             <View style={{ marginTop: 10, padding: 10, borderRadius: 10, width: '40%' }}>
                 <Button
                     title="Get Location"
                     onPress={permissionHandle}
                 />
-
             </View>
+
             <Text>Latitude: {viewLocation.latitude}</Text>
             <Text>Longitude: {viewLocation.longitude}</Text>
             <View style={{ marginTop: 10, padding: 10, borderRadius: 10, width: '40%' }}>
@@ -88,6 +128,7 @@ const Maps = () => {
                     onPress={sendLocation}
                 />
             </View>
+
             <View>
                 <GooglePlacesAutocomplete
                     placeholder="Search"
@@ -100,10 +141,10 @@ const Maps = () => {
                             longitude: details.geometry.location.lng,
                             latitudeDelta: 0.000922,
                             longitudeDelta: 0.000421
-                        });
+                        })
                     }}
                     getDefaultValue={() => {
-                        return '';
+                        return ''
                     }}
                     query={{
                         key: config.googleDirectionsApi,
@@ -139,7 +180,8 @@ const styles = StyleSheet.create({
     },
     map: {
         ...StyleSheet.absoluteFillObject,
+        height: 600
     },
-});
+})
 
-export default Maps;
+export default Maps
