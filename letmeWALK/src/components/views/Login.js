@@ -1,10 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
 import { readByKey } from '../../database/DbUtils';
+import auth from '@react-native-firebase/auth';
 
 const Login = (props) => {
-  let [user, onChangeUser] = React.useState("");
-  let [password, onChangePassword] = React.useState("");
+  const [user, setUser] = useState()
+  const [email, onChangeEmail] = useState("");
+  const [password, onChangePassword] = useState("");
+
+  const onAuthStateChanged = (user) => {
+    setUser(user);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, [])
+
+  const login = (email, password) => {
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        props.navigation.navigate('home', {
+          email: user.email
+        })
+      })
+      .catch(error => {
+        if (error.code === 'auth/invalid-email') alert('Email/senha inválido')
+        if (error.code === 'auth/wrong-password') alert('Email/senha inválido')
+      })
+  }
 
   return (
 
@@ -16,34 +41,25 @@ const Login = (props) => {
 
           <Image style={{ alignSelf: "center" }} source={require('../../assets/Component.png')} />
 
-          <Text style={styles.text}>Usuário</Text>
-          <TextInput style={styles.input} value={user} onChangeText={onChangeUser} />
+          <Text style={styles.text}>Email</Text>
+          <TextInput style={styles.input} value={email} onChangeText={onChangeEmail} />
 
           <Text style={styles.text}>Senha</Text>
           <TextInput label="Senha" style={styles.input} secureTextEntry={true} value={password} onChangeText={onChangePassword} />
 
           <TouchableOpacity value="Login" style={[styles.button, styles.buttonPrimary]} onPress={() => {
-
-            if (!user.trim() || !password) {
-              alert('Preencha os campos corretamente')
-              return
-            }
-
-            readByKey(user, (error, value) => {
+            readByKey(email, (error, value) => {
               if (error || !value) {
                 alert('Não foi possível encontrar o usuário');
                 return
               }
 
-              const result = JSON.parse(value);
-
-              if (result.user === user && result.password === password) {
-                props.navigation.navigate('home', {
-                  user: result
-                });
-              } else {
-                alert('Usuário ou senha inválido')
+              if (!email.trim() || !password) {
+                alert('Preencha os campos corretamente')
+                return
               }
+
+              login(email, password)
             })
           }}>
             <Text style={[styles.buttonText, styles.buttonTextPrimary]}>Login</Text>
@@ -56,7 +72,7 @@ const Login = (props) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAvoidingView >
   )
 }
 
