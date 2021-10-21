@@ -4,175 +4,187 @@ import { useEffect } from 'react/cjs/react.development';
 import { insertObject, readByKey } from '../../database/DbUtils';
 import auth from '@react-native-firebase/auth';
 import axios from 'axios';
-import { create } from 'react-test-renderer';
+import { create as createUserApi } from '../../services/UserService';
 
 const Login = (props) => {
-	const [user, setUser] = React.useState("");
-	const [initializing, setInitializing] = React.useState(true)
-	const [username, setUsername] = React.useState("")
-	const [password, setPassword] = React.useState("");
-	const [confirmPassword, setConfirmPassword] = React.useState("");
-	const [email, setEmail] = React.useState("");
-	const [cep, setCep] = React.useState("");
-	const [endereco, setEndereco] = React.useState({})
-	const [contatos, setContatos] = React.useState([])
+  const [user, setUser] = React.useState("");
+  const [initializing, setInitializing] = React.useState(true)
+  const [username, setUsername] = React.useState("")
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [cep, setCep] = React.useState("");
+  const [endereco, setEndereco] = React.useState({})
 
-	const validateEmail = (email) => {
-		const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-		return emailRegex.test(String(email));
-	}
+  const buscarCEP = async () => {
+    if (cep.length === 8) {
+      await axios.get(`https://api.pagar.me/1/zipcodes/${cep}`)
+        .then(response => setEndereco(response.data))
+        .catch(error => {
+          alert('o CEP é inválido')
+        })
+    }
+  }
 
-	const createUser = (email, password) => {
-		auth()
-			.createUserWithEmailAndPassword(email, password)
-			.catch(error => {
-				if (error.code === 'auth/email-already-in-use') {
-					alert('That email address is already in use!');
-				}
+  const validateEmail = (email) => {
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return emailRegex.test(String(email));
+  }
 
-				if (error.code === 'auth/invalid-email') {
-					alert('That email address is invalid!');
-				}
+  const validar = () => {
+    if (!validateEmail(email)) {
+      alert('Este não é um email válido')
+      return false
+    }
 
-				if (error.code === 'auth/weak-password') {
-					alert('A senha não é forte o suficiente')
-				}
+    if (!username.trim() || !email.trim() || !password || !confirmPassword) {
+      alert('Cadastre todos campos corretamente')
+      return false
+    }
 
-			})
-	}
+    if (password !== confirmPassword) {
+      alert('A confirmação de senha está errada')
+      return false
+    }
 
-	const onAuthStateChanged = (user) => {
-		setUser(user);
-		if (initializing) setInitializing(false)
-	}
+    if (!cep || cep.length < 8) {
+      alert('o CEP é inválido')
+      return false
+    }
+    return true
+  }
 
-	useEffect(() => {
-		const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-		return subscriber;
-	}, [])
+  const createUserDB = () => {
+    const user = createUserApi(username, email, password, endereco.state, endereco.city, endereco.neighborhood, endereco.street, '0', endereco.zipcode)
+  }
 
-	useEffect(() => {
-		axios.get(`https://api.pagar.me/1/zipcodes/${cep}`)
-			.then(response => setEndereco(response.data))
-			.then(console.log(endereco))
-			.catch(error => console.log(error))
-	}, [cep])
+  const createUser = (email, password) => {
+    if (validar()) {
+      auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          createUserDB()
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            alert('That email address is already in use!');
+          }
 
-	return (
-		<KeyboardAvoidingView
-			enabled
-			behavior="padding">
-			<ScrollView>
-				<View style={styles.container}>
-					<Text style={styles.title}>Cadastre-se</Text>
+          if (error.code === 'auth/invalid-email') {
+            alert('That email address is invalid!');
+          }
 
-					<Text style={styles.text}>Usuário</Text>
-					<TextInput style={styles.input} value={username} onChangeText={setUsername} />
+          if (error.code === 'auth/weak-password') {
+            alert('A senha não é forte o suficiente')
+          }
 
-					<Text style={styles.text}>Email</Text>
-					<TextInput style={styles.input} value={email} onChangeText={setEmail} />
+        })
+      return true
+    }
+    return false
+  }
 
-					<Text style={styles.text}>CEP</Text>
-					<TextInput style={styles.input} value={cep} onChangeText={setCep} />
+  const onAuthStateChanged = (user) => {
+    setUser(user);
+    if (initializing) setInitializing(false)
+  }
 
-					<Text style={styles.text}>Senha</Text>
-					<TextInput style={styles.input} secureTextEntry={true} value={password} onChangeText={setPassword} />
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, [])
 
-					<Text style={styles.text}>Confirme a senha</Text>
-					<TextInput style={styles.input} secureTextEntry={true} value={confirmPassword} onChangeText={setConfirmPassword} />
+  useEffect(() => {
+    buscarCEP()
+  }, [cep])
 
-					<TouchableOpacity style={[styles.button, styles.buttonPrimary]} onPress={() => {
-						const userData = {
-							username,
-							endereco,
-							password,
-							email,
-							contatos
-						}
+  return (
+    <KeyboardAvoidingView
+      enabled
+      behavior="padding">
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={styles.title}>Cadastre-se</Text>
 
-						if (!validateEmail(email)) {
-							alert('Este não é um email válido')
-							return
-						}
+          <Text style={styles.text}>Usuário</Text>
+          <TextInput style={styles.input} value={username} onChangeText={setUsername} />
 
-						if (!username.trim() || !email.trim() || !password || !confirmPassword) {
-							alert('Cadastre todos campos corretamente')
-							return
-						}
+          <Text style={styles.text}>Email</Text>
+          <TextInput style={styles.input} value={email} onChangeText={setEmail} />
 
-						if (password !== confirmPassword) {
-							alert('A confirmação de senha está errada')
-							return
-						}
+          <Text style={styles.text}>CEP</Text>
+          <TextInput style={styles.input} value={cep} onChangeText={setCep} />
 
-						createUser(email, password);
+          <Text style={styles.text}>Senha</Text>
+          <TextInput style={styles.input} secureTextEntry={true} value={password} onChangeText={setPassword} />
 
-						insertObject(email, userData, (error) => {
-							if (error) {
-								alert('Tenha certeza que todas informações estão corretas')
-								return
-							}
-						});
+          <Text style={styles.text}>Confirme a senha</Text>
+          <TextInput style={styles.input} secureTextEntry={true} value={confirmPassword} onChangeText={setConfirmPassword} />
 
+          <TouchableOpacity style={[styles.button, styles.buttonPrimary]} onPress={() => {
 
-						props.navigation.navigate('login')
+            const statusCreateUser = createUser(email, password);
+            if (statusCreateUser) {
+              alert('Usuário criado com sucesso')
+              props.navigation.navigate('login')
+            }
 
-					}}>
-						<Text style={styles.buttonText}>Cadastrar</Text>
-					</TouchableOpacity>
-				</View>
-			</ScrollView>
-		</KeyboardAvoidingView>
-	)
+          }}>
+            <Text style={styles.buttonText}>Cadastrar</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  )
 }
 
 const styles = StyleSheet.create({
-	container: {
-		backgroundColor: '#FFF',
-		flex: 1,
-		padding: 15,
-	},
-	title: {
-		fontSize: 25,
-		fontWeight: "600",
-		textAlign: 'center',
-		marginBottom: 10
-	},
-	text: {
-		color: '#000',
-		fontSize: 20
-	},
-	input: {
-		width: 370,
-		borderRadius: 8,
-		borderColor: "#000",
-		backgroundColor: '#FFF',
-		borderWidth: 1,
-		padding: 5,
-		marginBottom: 15,
-		fontSize: 15,
-		marginTop: 5
-	},
-	button: {
-		width: 370,
-		height: 50,
-		alignItems: "center",
-		justifyContent: "center",
-		borderRadius: 8,
-		marginTop: 5
-	},
-	buttonText: {
-		color: "#FFF",
-		fontSize: 17
-	},
-	buttonSecondary: {
-		backgroundColor: "#FFF",
-		borderColor: "#4169e1",
-		borderWidth: 2
-	},
-	buttonPrimary: {
-		backgroundColor: "#321D5F"
-	}
+  container: {
+    backgroundColor: '#FFF',
+    flex: 1,
+    padding: 15,
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: "600",
+    textAlign: 'center',
+    marginBottom: 10
+  },
+  text: {
+    color: '#000',
+    fontSize: 20
+  },
+  input: {
+    width: 370,
+    borderRadius: 8,
+    borderColor: "#000",
+    backgroundColor: '#FFF',
+    borderWidth: 1,
+    padding: 5,
+    marginBottom: 15,
+    fontSize: 15,
+    marginTop: 5
+  },
+  button: {
+    width: 370,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    marginTop: 5
+  },
+  buttonText: {
+    color: "#FFF",
+    fontSize: 17
+  },
+  buttonSecondary: {
+    backgroundColor: "#FFF",
+    borderColor: "#4169e1",
+    borderWidth: 2
+  },
+  buttonPrimary: {
+    backgroundColor: "#321D5F"
+  }
 })
 
 export default Login;

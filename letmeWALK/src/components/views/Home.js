@@ -1,32 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { insertObject, readAll, readByKey, clearDatabase } from '../../database/DbUtils';
+import { findByEmail } from '../../services/UserService';
+import auth from '@react-native-firebase/auth';
 
 const Home = (props) => {
   const { email } = props.route.params || '';
-  const [userLogged, setUserLogged] = useState();
+  let user = null;
 
-  async function getUserLogged() {
-    await readByKey(email, (error, value) => setUserLogged(value))
+  const getUser = () => {
+    findByEmail(email)
+      .then(res => user = res.data)
+      .catch(err => alert(err))
   }
 
   useEffect(() => {
-    getUserLogged()
-  }, [])
+    getUser()
+  })
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Bem-vindo ao LetmeWalk !!!</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => {
-        props.navigation.goBack();
+        auth()
+          .signOut()
+          .then(() => {
+            props.navigation.reset({
+              index: 0,
+              routes: [{ name: 'login' }]
+            })
+          })
       }}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => {
         props.navigation.navigate('contato', {
-          user: userLogged
+          user
         });
       }}>
         <Text style={styles.buttonText}>Adicionar contatos</Text>
@@ -34,7 +44,7 @@ const Home = (props) => {
 
       <TouchableOpacity style={styles.button} onPress={() => {
         props.navigation.navigate('maps', {
-          user: userLogged
+          user
         });
       }}>
         <Text style={styles.buttonText}>Rotas</Text>

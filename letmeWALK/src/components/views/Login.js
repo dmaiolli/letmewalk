@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
-import { readByKey } from '../../database/DbUtils';
 import auth from '@react-native-firebase/auth';
+import { findByEmail } from '../../services/UserService';
 
 const Login = (props) => {
   const [user, setUser] = useState()
+  const [userLogged, setUserLogged] = useState(null)
   const [email, onChangeEmail] = useState("");
   const [password, onChangePassword] = useState("");
 
@@ -12,15 +13,20 @@ const Login = (props) => {
     setUser(user);
   }
 
+  const getActualUser = (email) => {
+    findByEmail(email).then((response) => setUserLogged(response.data))
+  }
+
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber;
   }, [])
 
-  const login = (email, password) => {
+  const login = async (email, password) => {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
+        getActualUser()
         props.navigation.navigate('home', {
           email: user.email
         })
@@ -48,19 +54,19 @@ const Login = (props) => {
           <TextInput label="Senha" style={styles.input} secureTextEntry={true} value={password} onChangeText={onChangePassword} />
 
           <TouchableOpacity value="Login" style={[styles.button, styles.buttonPrimary]} onPress={() => {
-            readByKey(email, (error, value) => {
-              if (error || !value) {
-                alert('Não foi possível encontrar o usuário');
-                return
-              }
+            // readByKey(email, (error, value) => {
+            //   if (error || !value) {
+            //     alert('Não foi possível encontrar o usuário');
+            //     return
+            //   }
 
-              if (!email.trim() || !password) {
-                alert('Preencha os campos corretamente')
-                return
-              }
+            //   if (!email.trim() || !password) {
+            //     alert('Preencha os campos corretamente')
+            //     return
+            //   }
 
-              login(email, password)
-            })
+            // })
+            login(email, password)
           }}>
             <Text style={[styles.buttonText, styles.buttonTextPrimary]}>Login</Text>
           </TouchableOpacity>
