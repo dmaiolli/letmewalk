@@ -50,21 +50,39 @@ const DescricaoContato = (props) => {
 
   return (
     <View style={styles.container}>
+      <Button
+        accessible={true}
+        accessibilityLabel="Remover contato"
+        accessibilityHint="Excluir contato da lista de contatos"
+        accessibilityRole="button" title='Remover' onPress={() => {
+          removerContato()
+        }} />
       <Text style={styles.label}>Nome</Text>
-      <TextInput style={styles.input} value={novoNome} onChangeText={(text) => setNome(text)} />
+      <TextInput
+        acessible={true}
+        accessibilityHint="Insira o nome do novo contato"
+        style={styles.input}
+        value={novoNome}
+        onChangeText={(text) => setNome(text)} />
 
       <Text style={styles.label}>DDD</Text>
-      <TextInput keyboardType='numeric' style={styles.input} value={novoDDD} onChangeText={(text) => setDDD(text)} />
+      <TextInput acessible={true}
+        accessibilityHint="Insira o DDD do novo contato"
+        keyboardType='numeric' style={styles.input} value={novoDDD} onChangeText={(text) => setDDD(text)} />
 
       <Text style={styles.label}>Telefone</Text>
-      <TextInput keyboardType='numeric' style={styles.input} value={novoTelefone} onChangeText={(text) => setTelefone(text)} />
+      <TextInput acessible={true}
+        accessibilityHint="Insira o numero do novo contato"
+        keyboardType='numeric' style={styles.input} value={novoTelefone} onChangeText={(text) => setTelefone(text)} />
 
-      <Button title='Salvar' onPress={() => {
-        salvarAlteracoes()
-      }} />
-      <Button title='Remover' onPress={() => {
-        removerContato()
-      }} />
+      <Button
+        accessible={true}
+        accessibilityLabel="Salvar alterações"
+        accessibilityHint="Salvar alterações feitas no contato atual"
+        accessibilityRole="button"
+        title='Salvar' onPress={() => {
+          salvarAlteracoes()
+        }} />
     </View>
   )
 }

@@ -6,7 +6,6 @@ import { findAllByUserId } from "../../services/ContatoService";
 
 const Contato = (props) => {
   const { user } = props.route.params || '';
-  const [userLogged, setUserLogged] = useState()
   const [contacts, setContacts] = useState([])
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -15,7 +14,6 @@ const Contato = (props) => {
     findAllByUserId(user.id)
       .then(response => {
         setContacts(response.data)
-        console.log(response.data);
       })
       .finally(() => setIsRefreshing(false))
   }
@@ -31,13 +29,17 @@ const Contato = (props) => {
   const renderItem = ({ item }) => {
     return (
       <View style={styles.line}>
-        <Text style={styles.descContato}>
+        <Text style={styles.descContato} acessible={true}>
           {item.nome} - {item.telefone}
         </Text>
         <TouchableOpacity
-          style={styles.buttonRemove}
+          accessible={true}
+          accessibilityLabel="Editar contato"
+          accessibilityHint="Navega para uma tela para editar o contato selecionado"
+          accessibilityRole="button"
+          style={styles.buttonDescricaoContato}
           onPress={() => abrirDescricaoContato(item.id, item.nome, item.ddd, item.telefone)}>
-          <Icon name="add-task" style={{ paddingLeft: 10, paddingRight: 10 }} size={20} color="red" />
+          <Icon name="system-update-alt" style={{ paddingLeft: 10, paddingRight: 10 }} size={20} color="gray" />
         </TouchableOpacity>
       </View>
     )
@@ -45,11 +47,13 @@ const Contato = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <View style={styles.content}
+        accessible={true}
+        accessibilityLabel="Lista de contatos salvos"
+      >
         <Text style={styles.title}>Meus contatos</Text>
         <View style={styles.contacts}>
           {contacts.length === 0 && (
-            // TODO se contatos vazio
             <Image style={{ alignSelf: 'center', transform: [{ scale: 1.5 }], marginTop: 50 }} source={require("../../assets/empty-list.png")} />
           )}
 
@@ -65,13 +69,17 @@ const Contato = (props) => {
         </View>
 
         <TouchableOpacity
+          accessible={true}
+          accessibilityLabel="Adicionar contato"
+          accessibilityHint="Adiciona um novo contato"
+          accessibilityRole="button"
           style={styles.button}
           onPress={() => {
             props.navigation.navigate("addContato", {
               user
             })
           }}>
-          <Text>Novo contato</Text>
+          <Text style={styles.buttonText}>Novo contato</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -105,9 +113,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 8,
     marginTop: 5,
-    backgroundColor: "#0FF",
+    backgroundColor: "#321D5F",
   },
-  buttonRemove: {
+  buttonText: {
+    color: "#FFF"
+  },
+  buttonDescricaoContato: {
     width: 50,
     height: 50,
     alignItems: "center",
@@ -124,7 +135,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#6F53AC',
     borderRadius: 8,
     justifyContent: 'space-between',
-    padding: 8
+    padding: 8,
+    marginTop: 8
   },
   descContato: {
     fontSize: 24

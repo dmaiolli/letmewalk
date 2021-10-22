@@ -26,7 +26,7 @@ const Login = (props) => {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        getActualUser()
+        getActualUser(email)
         props.navigation.navigate('home', {
           email: user.email
         })

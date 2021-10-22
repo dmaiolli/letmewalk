@@ -11,7 +11,6 @@ import Register from './src/components/views/Register';
 import Home from './src/components/views/Home';
 import AddContato from './src/components/views/AddContato';
 import Maps from './src/components/views/Maps';
-import SearchLocation from './src/components/views/SearchLocation';
 import DescricaoContato from './src/components/views/DescricaoContato';
 
 const Stack = createNativeStackNavigator();
@@ -23,6 +22,18 @@ const App = () => {
         screenOptions={{
           headerTintColor: '#321D5F'
         }}>
+
+        <Stack.Screen
+          name="maps"
+          component={Maps}
+          options={{
+            title: 'Mapa',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} />
+
         <Stack.Screen
           name="login"
           component={Login}
@@ -45,27 +56,8 @@ const App = () => {
             headerTintColor: '#FFF'
           }} />
 
-        <Stack.Screen
-          name="maps"
-          component={Maps}
-          options={{
-            title: 'Mapa',
-            headerStyle: {
-              backgroundColor: '#321D5F'
-            },
-            headerTintColor: '#FFF'
-          }} />
 
-        <Stack.Screen
-          name="searchLocation"
-          component={SearchLocation}
-          options={({ navigation }) => ({
-            headerStyle: {
-              backgroundColor: '#321D5F',
-            },
-            headerTitle: props => <Image source={require("./src/assets/HeaderTitle.png")} style={{ transform: [{ scale: 1.5 }] }} />,
-          })}
-        />
+
 
         <Stack.Screen
           name="descricaoContato"

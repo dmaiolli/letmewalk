@@ -23,7 +23,7 @@ const AddContato = (props) => {
       alert('Preencha todos dados corretamente')
       return false
     }
-    if (ddd.length > 2 || ddd.length <= 1) {
+    if (ddd.length != 2) {
       alert('Preencha o DDD com apenas 2 digitos')
       return false
     }
@@ -44,7 +44,7 @@ const AddContato = (props) => {
         <Text style={styles.text}>Nome</Text>
         <TextInput style={styles.input} value={nome} onChangeText={setNome} />
 
-        <Text style={styles.text}>DDD</Text>
+        <Text style={styles.text}>DDD (2 dígitos)</Text>
         <TextInput style={styles.input} value={ddd} onChangeText={setDDD} />
 
         <Text style={styles.text}>Celular</Text>

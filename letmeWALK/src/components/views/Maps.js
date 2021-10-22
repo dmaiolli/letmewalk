@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react"
-import { Button, StyleSheet, Text, View } from "react-native"
+import { Alert, Button, StyleSheet, Text, View } from "react-native"
 import MapView, { MarkerAnimated, PROVIDER_GOOGLE } from 'react-native-maps'
 import RNLocation from 'react-native-location'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
@@ -22,20 +22,24 @@ const Maps = () => {
 
   useEffect(async () => {
     const status = permissionHandle()
-    console.log(status);
 
     if (status) {
-      let location = await RNLocation.getLatestLocation({ timeout: 100, })
-      setOrigin({
-        latitude: location.latitude,
-        longitude: location.longitude,
-        latitudeDelta: 0.00922,
-        longitudeDelta: 0.00421
-      })
+      getLocation()
     } else {
       throw new Error('Location permission not granted')
     }
   }, [])
+
+  const getLocation = async () => {
+    let location = await RNLocation.getLatestLocation({ timeout: 100, })
+    setOrigin({
+      latitude: location.latitude,
+      longitude: location.longitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421
+    })
+    console.log(location);
+  }
 
   const permissionHandle = async () => {
     const permission = await RNLocation.checkPermission({
@@ -58,16 +62,15 @@ const Maps = () => {
           }
         }
       })
-
       return permission
     }
   }
 
 
-  const sendLocation = async () => {
-    location = await RNLocation.getLatestLocation({ timeout: 100 })
-    setViewLocation(location)
-  }
+  // const sendLocation = async () => {
+  //   location = await RNLocation.getLatestLocation({ timeout: 100 })
+  //   setViewLocation(location)
+  // }
 
   return (
     <View>
@@ -77,7 +80,6 @@ const Maps = () => {
           minLength={5} // minimum length of text to search
           autoFocus={false}
           fetchDetails={true}
-          style={{ flex: 1 }}
           onPress={(data, details = null) => {
             setDestination({
               latitude: details.geometry.location.lat,
@@ -101,8 +103,8 @@ const Maps = () => {
               color: '#1faadb',
             },
             listView: {
-              color: 'black', //To see where exactly the list is
-              zIndex: 1000, //To popover the component outwards
+              color: 'black',
+              zIndex: 1000,
               position: 'absolute',
               top: 45
             },
@@ -128,50 +130,52 @@ const Maps = () => {
           }}
         >
           {destination && (
+            <View>
 
-            <MapViewDirections
-              origin={origin}
-              destination={destination}
-              apikey={config.googleDirectionsApi}
-              strokeWidth={3}
-              onReady={result => {
-                setDistance(result.distance)
-                mapEl.current.fitToCoordinates(
-                  result.coordinates, {
-                  edgePadding: {
-                    top: 50,
-                    bottom: 50,
-                    left: 50,
-                    right: 50
+              <MapViewDirections
+                origin={origin}
+                destination={destination}
+                apikey={config.googleDirectionsApi}
+                strokeWidth={3}
+                onReady={result => {
+                  setDistance(result.distance)
+                  mapEl.current.fitToCoordinates(
+                    result.coordinates, {
+                    edgePadding: {
+                      top: 50,
+                      bottom: 50,
+                      left: 50,
+                      right: 50
+                    }
                   }
-                }
-                )
-              }}
-            />
+                  )
+                  alert('Distância de: ', distance)
+                }}
+              />
+              <Text style={{ fontSize: 55, zIndex: 50 }}>Distância: {distance}</Text>
+            </View>
           )}
         </MapView>
       </View>
 
+      <View style={{ flexDirection: 'row' }}>
 
-      {/* <View>
-        <Text>Distancia: {distance} km</Text>
+        <View style={{ padding: 10, borderRadius: 10, width: '40%' }}>
+          <Button
+            title="Get Location"
+            onPress={getLocation}
+          />
+          {/* <Button
+            title="Botão pânico"
+            onPress={sendLocation}
+          /> */}
+        </View>
+        <View style={{ padding: 10, borderRadius: 10, width: '40%' }}>
+          <Text>Latitude: {origin.latitude}</Text>
+          <Text>Longitude: {origin.longitude}</Text>
+        </View>
+
       </View>
-      <View style={{ marginTop: 10, padding: 10, borderRadius: 10, width: '40%' }}>
-        <Button
-          title="Get Location"
-          onPress={permissionHandle}
-        />
-      </View>
-
-      <Text>Latitude: {viewLocation.latitude}</Text>
-      <Text>Longitude: {viewLocation.longitude}</Text>
-      <View style={{ marginTop: 10, padding: 10, borderRadius: 10, width: '40%' }}>
-        <Button
-          title="Botão pânico"
-          onPress={sendLocation}
-        />
-      </View> */}
-
     </View>
   )
 }
@@ -184,7 +188,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   map: {
-    height: 1000,
+    height: 600,
     marginTop: 45
   },
 })
