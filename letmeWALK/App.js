@@ -2,13 +2,16 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import Icon from 'react-native-vector-icons/Feather';
+import { Image } from 'react-native';
+
 import Contato from './src/components/views/Contato';
 import Login from './src/components/views/Login';
 import Register from './src/components/views/Register';
 import Home from './src/components/views/Home';
 import AddContato from './src/components/views/AddContato';
 import Maps from './src/components/views/Maps';
-import Teste from './src/components/views/Testes';
+import DescricaoContato from './src/components/views/DescricaoContato';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,17 +22,6 @@ const App = () => {
         screenOptions={{
           headerTintColor: '#321D5F'
         }}>
-
-        {/* <Stack.Screen
-          name="teste"
-          component={Teste}
-          options={{
-            title: 'Lista contatos',
-            headerStyle: {
-              backgroundColor: '#321D5F'
-            },
-            headerTintColor: '#FFF'
-          }} /> */}
 
         <Stack.Screen
           name="maps"
@@ -45,23 +37,13 @@ const App = () => {
         <Stack.Screen
           name="login"
           component={Login}
-          options={{
+          options={({ navigation }) => ({
             title: 'Faça seu login',
             headerStyle: {
               backgroundColor: '#321D5F'
             },
-            headerTintColor: '#FFF'
-          }} />
-        <Stack.Screen
-          name="contato"
-          component={Contato}
-          options={{
-            title: 'Lista contatos',
-            headerStyle: {
-              backgroundColor: '#321D5F'
-            },
-            headerTintColor: '#FFF'
-          }} />
+            headerTitle: () => <Image source={require("./src/assets/HeaderTitle.png")} style={{ transform: [{ scale: 1.5 }] }} />,
+          })} />
 
         <Stack.Screen
           name="addContato"
@@ -77,10 +59,27 @@ const App = () => {
 
 
 
+        <Stack.Screen
+          name="descricaoContato"
+          component={DescricaoContato}
+          options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: '#321D5F',
+            },
+            headerTitle: props => <Image source={require("./src/assets/HeaderTitle.png")} style={{ transform: [{ scale: 1.5 }] }} />,
+          })}
+        />
 
-
-
-
+        <Stack.Screen
+          name="contato"
+          component={Contato}
+          options={{
+            title: 'Lista contatos',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} />
 
         <Stack.Screen
           name="register"
@@ -93,12 +92,19 @@ const App = () => {
             headerTintColor: '#FFF'
           }} />
 
-
         <Stack.Screen
           name="home"
-          options={{
-            title: 'Home'
-          }}
+          options={({ navigation }) => ({
+            title: 'Home',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerBackTitleStyle: {
+              color: 'white'
+            },
+            headerTintColor: '#FFF',
+            headerTitle: props => <Image source={require("./src/assets/HeaderTitle.png")} style={{ transform: [{ scale: 1.5 }] }} />,
+          })}
           component={Home} />
       </Stack.Navigator>
     </NavigationContainer>
