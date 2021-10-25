@@ -24,17 +24,6 @@ const App = () => {
         }}>
 
         <Stack.Screen
-          name="maps"
-          component={Maps}
-          options={{
-            title: 'Mapa',
-            headerStyle: {
-              backgroundColor: '#321D5F'
-            },
-            headerTintColor: '#FFF'
-          }} />
-
-        <Stack.Screen
           name="login"
           component={Login}
           options={({ navigation }) => ({
@@ -56,8 +45,16 @@ const App = () => {
             headerTintColor: '#FFF'
           }} />
 
-
-
+        <Stack.Screen
+          name="maps"
+          component={Maps}
+          options={{
+            title: 'Mapa',
+            headerStyle: {
+              backgroundColor: '#321D5F'
+            },
+            headerTintColor: '#FFF'
+          }} />
 
         <Stack.Screen
           name="descricaoContato"

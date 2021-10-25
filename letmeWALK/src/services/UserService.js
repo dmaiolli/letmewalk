@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = "http://10.0.2.2:8080/api/user"
+const BASE_URL = "https://webapp-sampleapp-rm84281.azurewebsites.net/api/user"
 
 export const create = async (nome, email, senha, estado, cidade, bairro, logradouro, numero, cep) => {
   return axios({

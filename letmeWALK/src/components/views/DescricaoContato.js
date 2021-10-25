@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useEffect } from "react/cjs/react.development";
 import { deleteContato, update } from "../../services/ContatoService";
 
@@ -9,10 +9,6 @@ const DescricaoContato = (props) => {
   const [novoNome, setNome] = useState(nome)
   const [novoTelefone, setTelefone] = useState(`${telefone}`)
   const [novoDDD, setDDD] = useState(`${ddd}`)
-
-  useEffect(() => {
-    console.log(novoTelefone);
-  })
 
   const validar = () => {
     if (!novoNome.trim() || !novoTelefone.trim() || !novoDDD.trim()) {
@@ -50,13 +46,16 @@ const DescricaoContato = (props) => {
 
   return (
     <View style={styles.container}>
-      <Button
+      <TouchableOpacity
+        style={[styles.buttonRemove, styles.button]}
         accessible={true}
         accessibilityLabel="Remover contato"
         accessibilityHint="Excluir contato da lista de contatos"
-        accessibilityRole="button" title='Remover' onPress={() => {
+        accessibilityRole="button" onPress={() => {
           removerContato()
-        }} />
+        }}>
+        <Text style={styles.buttonText}>Remover</Text>
+      </TouchableOpacity>
       <Text style={styles.label}>Nome</Text>
       <TextInput
         acessible={true}
@@ -75,14 +74,17 @@ const DescricaoContato = (props) => {
         accessibilityHint="Insira o numero do novo contato"
         keyboardType='numeric' style={styles.input} value={novoTelefone} onChangeText={(text) => setTelefone(text)} />
 
-      <Button
+      <TouchableOpacity
+        style={[styles.button, styles.buttonSave]}
         accessible={true}
         accessibilityLabel="Salvar alterações"
         accessibilityHint="Salvar alterações feitas no contato atual"
         accessibilityRole="button"
-        title='Salvar' onPress={() => {
+        onPress={() => {
           salvarAlteracoes()
-        }} />
+        }}>
+        <Text style={styles.buttonText}>Salvar</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -106,6 +108,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: 5
   },
+  button: {
+    width: 380,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  buttonText: {
+    color: "#FFF"
+  },
+  buttonRemove: {
+    backgroundColor: "#f00"
+  },
+  buttonSave: {
+    backgroundColor: "#321D5F",
+  }
 })
 
 export default DescricaoContato

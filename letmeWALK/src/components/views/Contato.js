@@ -69,10 +69,6 @@ const Contato = (props) => {
         </View>
 
         <TouchableOpacity
-          accessible={true}
-          accessibilityLabel="Adicionar contato"
-          accessibilityHint="Adiciona um novo contato"
-          accessibilityRole="button"
           style={styles.button}
           onPress={() => {
             props.navigation.navigate("addContato", {
@@ -94,7 +90,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    height: 500
+    height: 700
   },
   title: {
     fontSize: 24,

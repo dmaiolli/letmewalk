@@ -157,25 +157,6 @@ const Maps = () => {
           )}
         </MapView>
       </View>
-
-      <View style={{ flexDirection: 'row' }}>
-
-        <View style={{ padding: 10, borderRadius: 10, width: '40%' }}>
-          <Button
-            title="Get Location"
-            onPress={getLocation}
-          />
-          {/* <Button
-            title="Botão pânico"
-            onPress={sendLocation}
-          /> */}
-        </View>
-        <View style={{ padding: 10, borderRadius: 10, width: '40%' }}>
-          <Text>Latitude: {origin.latitude}</Text>
-          <Text>Longitude: {origin.longitude}</Text>
-        </View>
-
-      </View>
     </View>
   )
 }
